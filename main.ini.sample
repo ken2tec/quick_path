@@ -1,0 +1,12 @@
+[Paths]
+Projects = C:\Development\Projects
+Documents = C:\Users\YourUser\Documents
+Downloads = C:\Users\YourUser\Downloads
+
+[Commands]
+v = VSCODE, code {path}
+a = Antigravity, antigravity {path}
+
+[SyncCommands]
+g = GitStatus, git status
+u = DU-Check, powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem -Force | ForEach-Object { if ($_.PSIsContainer) { $size = (Get-ChildItem -LiteralPath $_.FullName -Recurse -Force -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum } else { $size = $_.Length }; if ($null -eq $size) { $size = 0 }; [PSCustomObject]@{ Name = $_.Name; SizeMB = [math]::round($size / 1MB, 2) } } | Sort-Object Name | Format-Table -AutoSize"
