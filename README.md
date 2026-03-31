@@ -16,7 +16,8 @@
 
 - **📂 Path Management**: Organize your workspace, documentation, and project paths in a simple `.ini` file.
 - **⚡ Rapid Navigation**: Instantly open folders in File Explorer or Windows Terminal with a single keystroke.
-- **📋 Smart Clipboard**: Copy paths or capture command output directly to your clipboard.
+- **Smart Clipboard**: Copy paths or capture command output directly to your clipboard.
+- **📜 Command History**: Sync command results are automatically logged to SQLite for easy retrieval later.
 - **🛠️ Custom Actions**: Define your own shortcuts to launch applications (e.g., VS Code, Antigravity) or run CLI commands.
 - **🌗 TUI (Text User Interface)**: A clean, keyboard-driven interface that feels fast and responsive.
 
@@ -55,6 +56,7 @@ Launch the application using the executable or `main.py`. The tool will automati
 | **[e]** | **Explore**: Open selected path in File Explorer |
 | **[t]** | **Terminal**: Open selected path in Windows Terminal |
 | **[c]** | **Copy**: Copy path to clipboard |
+| **[h]** | **History**: View and re-copy past sync command outputs |
 | **[q]** | **Quit**: Exit the application |
 | **Custom Keys** | Executed defined sync/async commands |
 

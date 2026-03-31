@@ -59,6 +59,8 @@ _bak/
 *.log
 main.ini
 assets/*.rdp
+docs/repository_preparation_log.md
+quick_path.db
 # If you want to keep a sample ini but not the one with your actual paths
 # setup.ini
 # config.ini

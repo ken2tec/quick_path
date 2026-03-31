@@ -6,6 +6,8 @@ import msvcrt
 import re
 import time
 
+import sqlite3
+
 def get_config_path():
     if getattr(sys, 'frozen', False):
         full_path = sys.executable
@@ -13,6 +15,27 @@ def get_config_path():
         full_path = os.path.abspath(__file__)
     pg_name = os.path.basename(full_path).split('.')[0]
     return os.path.join(os.path.dirname(full_path), f"{pg_name}.ini")
+
+def get_db_path():
+    # exe と同一フォルダの sqlite db パス
+    dir_path = os.path.dirname(os.path.abspath(sys.executable if getattr(sys, 'frozen', False) else __file__))
+    return os.path.join(dir_path, "quick_path.db")
+
+def init_db():
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS sync_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            executed_at TEXT,
+            label TEXT,
+            command TEXT,
+            output TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 def load_config():
     ini_path = get_config_path()
@@ -80,7 +103,21 @@ def run_action(action, path, commands, sync_commands):
             res = subprocess.run(final_cmd, shell=True, capture_output=True, text=True, encoding='cp932', cwd=dir_path, stdin=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
             output = (res.stdout or "") + (res.stderr or "")
             subprocess.run(['powershell', '-Command', '$Input | Out-String | Set-Clipboard'], input=output, text=True, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
-            print("Output copied to clipboard.")
+            
+            # DB への保存
+            try:
+                conn = sqlite3.connect(get_db_path())
+                cursor = conn.cursor()
+                cursor.execute(
+                    "INSERT INTO sync_history (executed_at, label, command, output) VALUES (?, ?, ?, ?)",
+                    (time.strftime("%Y-%m-%d %H:%M:%S"), label, final_cmd, output)
+                )
+                conn.commit()
+                conn.close()
+            except Exception as db_e:
+                print(f"DB Logging Error: {db_e}")
+
+            print("Output copied to clipboard and logged to DB.")
             time.sleep(1)
             
         return True
@@ -100,8 +137,63 @@ def get_dir_items(dir_path):
         print(f"Error: {e}")
         return []
 
+def show_history():
+    # 履歴を表示して選択、コピーする
+    try:
+        conn = sqlite3.connect(get_db_path())
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, executed_at, label, command, output FROM sync_history ORDER BY id DESC LIMIT 100")
+        rows = cursor.fetchall()
+        conn.close()
+    except Exception as e:
+        print(f"DB Error: {e}")
+        time.sleep(2)
+        return
+
+    if not rows:
+        print("\nNo history found.")
+        time.sleep(1)
+        return
+
+    h_idx = 0
+    while True:
+        os.system('cls')
+        print("=" * 75)
+        print(" SYNC COMMAND HISTORY (Up/Down: Select, Enter: Copy Output, q: Back)")
+        print("=" * 75)
+        
+        for i, (hid, ts, label, cmd, out) in enumerate(rows[:25]): # 直近25件表示
+            if i == h_idx:
+                print(f"\033[44m\033[37m > [{ts}] {label.ljust(15)} | {cmd[:45]}... \033[0m")
+            else:
+                print(f"   [{ts}] {label.ljust(15)} | {cmd[:45]}...")
+        
+        print("-" * 75)
+        if h_idx < len(rows):
+            _, ts, label, cmd, out = rows[h_idx]
+            print(f" Time: {ts}")
+            print(f" Cmd : {cmd}")
+        
+        key = msvcrt.getch()
+        if key in (b'\x00', b'\xe0'):
+            sub_key = msvcrt.getch()
+            if sub_key == b'H': h_idx = (h_idx - 1) % len(rows)
+            elif sub_key == b'P': h_idx = (h_idx + 1) % len(rows)
+        else:
+            try: char = key.decode('utf-8').lower()
+            except: continue
+            if char == 'q' or char == '\x1b': # q or ESC
+                break
+            elif char == '\r': # Enter
+                output = rows[h_idx][4]
+                subprocess.run(['powershell', '-Command', '$Input | Out-String | Set-Clipboard'], input=output, text=True, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
+                print("\nSelected output copied to clipboard.")
+                time.sleep(1)
+                break
+
 def main():
     os.system('') 
+    init_db() # DB初期化
     config_paths, commands, sync_commands = load_config()
     if not config_paths:
         input("\nPress Enter to exit..."); return
@@ -125,7 +217,7 @@ def main():
             menu_line += f" [{k}]:{label}"
         for k, (label, _) in sync_commands.items():
             menu_line += f" [{k}]:{label}"
-        print(f" {menu_line} [q]:Quit")
+        print(f" {menu_line} [h]:History [q]:Quit")
         print("=" * 75)
         
         # スクロール窓の制御: idx が表示範囲外に出たら窓をずらす
@@ -164,6 +256,8 @@ def main():
             
             if char == 'q':
                 break
+            elif char == 'h':
+                show_history()
             elif char in ('e', 't', 'c') or char in commands or char in sync_commands:
                 run_action(char, curr_path, commands, sync_commands)
             elif char == '\r': # Enter
