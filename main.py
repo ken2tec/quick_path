@@ -5,6 +5,7 @@ import configparser
 import msvcrt
 import re
 import time
+import socket
 
 import sqlite3
 
@@ -31,9 +32,19 @@ def init_db():
             executed_at TEXT,
             label TEXT,
             command TEXT,
-            output TEXT
+            output TEXT,
+            hostname TEXT,
+            cwd TEXT
         )
     ''')
+    # 既存テーブルがある場合のカラム追加 (移行対応)
+    try:
+        cursor.execute("ALTER TABLE sync_history ADD COLUMN hostname TEXT")
+    except: pass
+    try:
+        cursor.execute("ALTER TABLE sync_history ADD COLUMN cwd TEXT")
+    except: pass
+    
     conn.commit()
     conn.close()
 
@@ -108,9 +119,10 @@ def run_action(action, path, commands, sync_commands):
             try:
                 conn = sqlite3.connect(get_db_path())
                 cursor = conn.cursor()
+                hostname = socket.gethostname()
                 cursor.execute(
-                    "INSERT INTO sync_history (executed_at, label, command, output) VALUES (?, ?, ?, ?)",
-                    (time.strftime("%Y-%m-%d %H:%M:%S"), label, final_cmd, output)
+                    "INSERT INTO sync_history (executed_at, label, command, output, hostname, cwd) VALUES (?, ?, ?, ?, ?, ?)",
+                    (time.strftime("%Y-%m-%d %H:%M:%S"), label, final_cmd, output, hostname, dir_path)
                 )
                 conn.commit()
                 conn.close()
@@ -142,7 +154,7 @@ def show_history():
     try:
         conn = sqlite3.connect(get_db_path())
         cursor = conn.cursor()
-        cursor.execute("SELECT id, executed_at, label, command, output FROM sync_history ORDER BY id DESC LIMIT 100")
+        cursor.execute("SELECT id, executed_at, label, command, output, hostname, cwd FROM sync_history ORDER BY id DESC LIMIT 100")
         rows = cursor.fetchall()
         conn.close()
     except Exception as e:
@@ -162,16 +174,19 @@ def show_history():
         print(" SYNC COMMAND HISTORY (Up/Down: Select, Enter: Copy Output, q: Back)")
         print("=" * 75)
         
-        for i, (hid, ts, label, cmd, out) in enumerate(rows[:25]): # 直近25件表示
+        for i, (hid, ts, label, cmd, out, host, cwd) in enumerate(rows[:25]): # 直近25件表示
             if i == h_idx:
-                print(f"\033[44m\033[37m > [{ts}] {label.ljust(15)} | {cmd[:45]}... \033[0m")
+                prefix = f"[{host}]"
+                print(f"\033[44m\033[37m > {prefix.ljust(12)} [{ts}] {label.ljust(15)} | {cmd[:25]}... \033[0m")
             else:
-                print(f"   [{ts}] {label.ljust(15)} | {cmd[:45]}...")
+                prefix = f"[{host}]"
+                print(f"   {prefix.ljust(12)} [{ts}] {label.ljust(15)} | {cmd[:25]}...")
         
         print("-" * 75)
         if h_idx < len(rows):
-            _, ts, label, cmd, out = rows[h_idx]
-            print(f" Time: {ts}")
+            _, ts, label, cmd, out, host, cwd = rows[h_idx]
+            print(f" Host: {host}")
+            print(f" Dir : {cwd}")
             print(f" Cmd : {cmd}")
         
         key = msvcrt.getch()
