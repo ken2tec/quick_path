@@ -56,7 +56,7 @@ Launch the application using the executable or `main.py`. The tool will automati
 | **[e]** | **Explore**: Open selected path in File Explorer |
 | **[t]** | **Terminal**: Open selected path in Windows Terminal |
 | **[c]** | **Copy**: Copy path to clipboard |
-| **[h]** | **History**: View and re-copy past sync command outputs |
+| **[h]** | **History**: View, re-copy [c], or export [f] past sync command outputs |
 | **[q]** | **Quit**: Exit the application |
 | **Custom Keys** | Executed defined sync/async commands |
 
@@ -79,6 +79,7 @@ g = GitStatus, git status
 
 - **[Commands]**: Launch apps asynchronously (background).
 - **[SyncCommands]**: Run commands and capture output to the clipboard.
+- **{{Parameter}} Support**: Use `{{name}}` placeholders to prompt for user input before command execution.
 
 ## 📄 License
 
