@@ -1,6 +1,6 @@
 # Build Script
 $PG_NAME = "quick_path"
-$VERSION = "1.3.2604"
+$VERSION = "1.4.2604"
 $EXE_NAME = "$PG_NAME.$VERSION"
 $ICON_PATH = "assets/ken2tec.ico"
 

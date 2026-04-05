@@ -310,12 +310,24 @@ def main():
         enter_label = "Enter" if is_dir else "Run"
         
         print("=" * 75)
-        menu_line = f"[Enter]:{enter_label} [e]:Explore [t]:Terminal [c]:Copy"
-        for k, (label, _) in commands.items():
-            menu_line += f" [{k}]:{label}"
-        for k, (label, _) in sync_commands.items():
-            menu_line += f" [{k}]:{label}"
-        print(f" {menu_line} [h]:History [q]:Quit")
+        # 内蔵系コマンド (1行目)
+        print(f" [Enter]:{enter_label} [e]:Explore [t]:Terminal [c]:Copy [h]:History [q]:Quit")
+        
+        # ユーザー定義コマンド (76文字制限で改行)
+        user_menu = ""
+        all_user_cmds = list(commands.items()) + list(sync_commands.items())
+        for k, (label, _) in all_user_cmds:
+            item = f" [{k}]:{label}"
+            if len(user_menu) + len(item) > 76:
+                print(user_menu)
+                user_menu = " " + item
+            else:
+                if not user_menu:
+                    user_menu = " " + item
+                else:
+                    user_menu += item
+        if user_menu:
+            print(user_menu)
         print("=" * 75)
         
         # スクロール窓の制御: idx が表示範囲外に出たら窓をずらす

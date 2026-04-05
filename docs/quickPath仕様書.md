@@ -1,4 +1,4 @@
-# Quick Path (quick_path.1.3.2604.exe) 仕様書
+# Quick Path (quick_path.1.4.2604.exe) 仕様書
 
 ## 1. 製品概要
 `quick_path` は、ファイルパスやディレクトリパスをリスト形式で管理し、選択したパスに対して迅速にアクション（エクスプローラー起動、ターミナル起動、パスコピー、カスタムコマンド実行）を行うためのコマンドラインインターフェース（CLI）ツールです。
@@ -8,9 +8,9 @@
 ## 2. 操作方法 (ユーザーマニュアル)
 
 ### 2.1 起動方法
-1. `quick_path.1.3.2604.exe` を実行します。
+1. `quick_path.1.4.2604.exe` を実行します。
 2. 同一ディレクトリにある `quick_path.ini` を自動的に読み込みます。
-3. プログラム名が `quick_path.1.3.2604.exe` の場合、最初のピリオドより前の `quick_path` がベースとなります。
+3. プログラム名が `quick_path.1.4.2604.exe` の場合、最初のピリオドより前の `quick_path` がベースとなります。
 
 ### 2.2 メイン画面の操作
 | キー             | アクション                                                               |
@@ -106,6 +106,12 @@ f = Find, powershell -Command "Select-String -Pattern '{{keyword}}' -Path '{path
   - 履歴一覧から項目を選択して `f` を押すと、ファイル名を入力してその内容を ANSI (CP932) エンコードでファイル出力（実行ファイルと同一フォルダ内）できます。
   - `q` または `Esc` キーでメインメニューに戻ります。
 
+### 4.4 UI表示ロジック (メニュー部の表示)
+- **コマンドキーヘルプの表示**:
+  - 画面上部のコマンドキーヘルプは、視認性向上のため以下のルールで改行して表示されます。
+  - **第1行 (内蔵系コマンド)**: 全ての内蔵コマンド (`[Enter]`, `[e]`, `[t]`, `[c]`, `[h]`, `[q]`) を 1 行にまとめて表示した後に改行します。
+  - **第2行以降 (ユーザー定義コマンド)**: `[Commands]`, `[SyncCommands]` セクションの内容を、1行 76 文字を目安に、コマンド単位で適切に改行を挿入して表示します。
+
 <div class="page"/>
 
 ## 5. 物理設計 (ファイル構成・ビルド)
@@ -132,6 +138,7 @@ f = Find, powershell -Command "Select-String -Pattern '{{keyword}}' -Path '{path
 - **Windows Terminal**: `[t]` アクションは Windows Terminal (`wt`) がインストールされている必要があります。
 - **パスのクォート**: カスタムコマンド内で `{path}` を使用する場合、内部で自動的にクォート処理が行われます。
 
+<!-- PDF用スタイル -->
 <style>
 table {margin: auto; text-align: center;}
 table th {font-size: 0.8em; background-color: #F0F8FF; border: solid 1px white; line-height: 1.1em;}
@@ -151,3 +158,11 @@ code { font-size: 0.8em; line-height: 1.25em; font-family: 'Rounded Mgen+ 1m reg
 pre { font-size: 0.8em; line-height: 1.25em; font-family: 'Rounded Mgen+ 1m regular', Consolas, 'Courier New', monospace;}
 li { font-size: 0.9em; line-height: 1.25em;}
 </style>
+
+## 7. 更新履歴
+- **1.4.2604 (2026-04-06)**:
+  - コマンドキーヘルプの表示を整理。
+  - 内蔵コマンド (Enter, e, t, c, h, q) を一行目に、ユーザー定義コマンドを二行目以降（76文字制限）に表示するよう変更。
+  - 仕様書のPDF出力時の視認性を調整。
+- **1.3.2604 (2026-04-04)**:
+  - ユーザー定義パラメータ `{{name}}` に対応。
