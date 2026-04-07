@@ -231,16 +231,32 @@ def show_history():
         return
 
     h_idx = 0
+    h_start_idx = 0
+    window_size = 25
     while True:
         os.system('cls')
         print("=" * 75)
         print(" SYNC COMMAND HISTORY (Up/Down: Select, [c]: Copy, [f]: File, [q]: Back)")
         print("=" * 75)
         
-        for i, (hid, ts, label, cmd, out, host, cwd) in enumerate(rows[:25]): # 直近25件表示
+        # スクロール窓の制御: h_idx が表示範囲外に出たら窓をずらす
+        if h_idx < h_start_idx:
+            h_start_idx = h_idx
+        elif h_idx >= h_start_idx + window_size:
+            h_start_idx = h_idx - window_size + 1
+
+        # 表示対象をスライスしてループ
+        visible_rows = rows[h_start_idx : h_start_idx + window_size]
+        for i, (hid, ts, label, cmd, out, host, cwd) in enumerate(visible_rows):
+            current_i = h_start_idx + i
             prefix = f"[{host}]"
             line_text = f"{prefix.ljust(12)} [{ts}] {label.ljust(15)} | {cmd[:25]}..."
-            print_colored(line_text, is_highlight=(i == h_idx))
+            print_colored(line_text, is_highlight=(current_i == h_idx))
+        
+        # 残り行の埋め合わせ (UIを維持)
+        if len(visible_rows) < window_size:
+            for _ in range(window_size - len(visible_rows)):
+                print(" " * 75)
         
         print("-" * 75)
         if h_idx < len(rows):
