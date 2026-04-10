@@ -56,7 +56,7 @@ Launch the application using the executable or `main.py`. The tool will automati
 | **[e]** | **Explore**: Open selected path in File Explorer |
 | **[t]** | **Terminal**: Open selected path in Windows Terminal |
 | **[c]** | **Copy**: Copy path to clipboard |
-| **[h]** | **History**: View, re-copy [c], or export [f] past sync command outputs |
+| **[h]** | **History**: View, re-copy [c], export [f], or delete [d] past sync command outputs |
 | **[q]** | **Quit**: Exit the application |
 | **Custom Keys** | Executed defined sync/async commands |
 

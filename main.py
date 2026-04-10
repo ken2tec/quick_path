@@ -236,7 +236,7 @@ def show_history():
     while True:
         os.system('cls')
         print("=" * 75)
-        print(" SYNC COMMAND HISTORY (Up/Down: Select, [c]: Copy, [f]: File, [q]: Back)")
+        print(" SYNC COMMAND HISTORY (Up/Down: Select, [c]: Copy, [f]: File, [d]: Delete, [q]: Back)")
         print("=" * 75)
         
         # スクロール窓の制御: h_idx が表示範囲外に出たら窓をずらす
@@ -303,6 +303,45 @@ def show_history():
                 
                 time.sleep(1)
                 break
+            elif char == 'd': # Delete record
+                if h_idx < len(rows):
+                    hid, ts, label, cmd, out, host, cwd = rows[h_idx]
+                    print(f"\n [CONFIRM] Delete this record? (ID: {hid}) [y/N]: ", end="", flush=True)
+                    # wait for 'y' or 'n'
+                    while True:
+                        ans_key = msvcrt.getch()
+                        try:
+                            ans_char = ans_key.decode('utf-8').lower()
+                            if ans_char == 'y':
+                                try:
+                                    conn = sqlite3.connect(get_db_path())
+                                    cursor = conn.cursor()
+                                    cursor.execute("DELETE FROM sync_history WHERE id = ?", (hid,))
+                                    conn.commit()
+                                    conn.close()
+                                    print("Deleted.")
+                                    time.sleep(0.5)
+                                    # Refresh rows
+                                    conn = sqlite3.connect(get_db_path())
+                                    cursor = conn.cursor()
+                                    cursor.execute("SELECT id, executed_at, label, command, output, hostname, cwd FROM sync_history ORDER BY id DESC LIMIT 100")
+                                    rows = cursor.fetchall()
+                                    conn.close()
+                                    if not rows:
+                                        break # 履歴が空になったら戻る
+                                    if h_idx >= len(rows):
+                                        h_idx = max(0, len(rows) - 1)
+                                except Exception as db_e:
+                                    print(f"Delete Error: {db_e}")
+                                    time.sleep(2)
+                                break
+                            elif ans_char == 'n' or ans_key in (b'\r', b'\x1b'): # Enter or ESC
+                                print("Cancelled.")
+                                time.sleep(0.5)
+                                break
+                        except:
+                            break
+                    if not rows: break # リフレッシュ後にデータがなければループを抜ける
 
 def main():
     os.system('') 
