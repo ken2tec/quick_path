@@ -48,17 +48,17 @@ Launch the application using the executable or `main.py`. The tool will automati
 
 ### Controls
 
-| Key | Action |
-| :--- | :--- |
-| **Arrow Up/Down** | Highlight a path or directory |
-| **Enter** | Enter directory / Open file in Explorer |
-| **[ .. ]** | Go back to parent / Main menu |
-| **[e]** | **Explore**: Open selected path in File Explorer |
-| **[t]** | **Terminal**: Open selected path in Windows Terminal |
-| **[c]** | **Copy**: Copy path to clipboard |
-| **[h]** | **History**: View, re-copy [c], export [f], or delete [d] past sync command outputs |
-| **[q]** | **Quit**: Exit the application |
-| **Custom Keys** | Executed defined sync/async commands |
+| Key               | Action                                                                              |
+| :---------------- | :---------------------------------------------------------------------------------- |
+| **Arrow Up/Down** | Highlight a path or directory                                                       |
+| **Enter**         | Enter directory / Open file in Explorer                                             |
+| **[ .. ]**        | Go back to parent / Main menu                                                       |
+| **[e]**           | **Explore**: Open selected path in File Explorer                                    |
+| **[t]**           | **Terminal**: Open selected path in Windows Terminal                                |
+| **[c]**           | **Copy**: Copy path to clipboard                                                    |
+| **[h]**           | **History**: View, re-copy [c], export [f], or delete [d] past sync command outputs |
+| **[q]**           | **Quit**: Exit the application                                                      |
+| **Custom Keys**   | Executed defined sync/async commands                                                |
 
 ## ⚙️ Configuration (`main.ini`)
 
@@ -86,30 +86,32 @@ g = GitStatus, git status
 The following commands are pre-defined in `main.ini` for quick access and common tasks.
 
 #### `[Commands]` (Async / Background)
-| Key | Label | Description |
-| :--- | :--- | :--- |
-| **v** | **VSCODE** | Open selected path in Visual Studio Code. |
-| **a** | **Antigravity** | Open selected path in Antigravity. |
-| **b** | **GitBash** | Launch Git Bash in the selected directory. |
-| **m** | **Memorandum** | Open a simple GUI scratchpad for quick notes. |
-| **p** | **ProcessToCsv** | Dump detailed process list to a CSV file. |
-| **w** | **WatchFolder** | Monitor file changes in a specific directory. |
-| **x** | **XlsxToCsv** | Convert selected Excel sheet to CSV. |
+| Key   | Label              | Description                                        |
+| :---- | :----------------- | :------------------------------------------------- |
+| **v** | **VSCODE**         | Open selected path in Visual Studio Code.          |
+| **a** | **Antigravity**    | Open selected path in Antigravity.                 |
+| **b** | **GitBash**        | Launch Git Bash in the selected directory.         |
+| **m** | **Memorandum**     | Open a simple GUI scratchpad for quick notes.      |
+| **o** | **AutoWndAlign**   | Automatically align apps (Antigravity, VS Code, etc.) to preset positions. |
+| **p** | **ProcessToCsv**   | Dump detailed process list to a CSV file.          |
+| **w** | **WatchFolder**    | Monitor file changes in a specific directory.      |
+| **x** | **XlsxToCsv**      | Convert selected Excel sheet to CSV.               |
 | **y** | **WatchClipboard** | Monitor and log clipboard changes in a GUI window. |
 
 #### `[SyncCommands]` (Sync / Logged to Clipboard)
-| Key | Label | Description |
-| :--- | :--- | :--- |
-| **d** | **Du** | Display directory usage (Customizable depth). |
-| **u** | **DuFull** | Recursive disk usage calculation exported to CSV. |
-| **r** | **Tree** | View directory structure with file sizes and timestamps. |
-| **f** | **Find** | Search files by name using RegExp. |
-| **g** | **Grep** | Search text content within files. |
-| **j** | **FindWith7z** | Search files inside archives (zip, 7z, etc.). |
-| **k** | **GrepWith7z** | Full-text search inside archived files. |
-| **l** | **ScoopList** | List installed Scoop packages and binaries. |
-| **s** | **PingSweep** | Perform a network ping sweep on a range. |
-| **i** | **GitStatus** | Execute `git status` and capture output. |
+| Key   | Label          | Description                                              |
+| :---- | :------------- | :------------------------------------------------------- |
+| **d** | **Du**         | Display directory usage (Customizable depth).            |
+| **u** | **DuFull**     | Recursive disk usage calculation exported to CSV.        |
+| **r** | **Tree**       | View directory structure with file sizes and timestamps. |
+| **f** | **Find**       | Search files by name using RegExp.                       |
+| **g** | **Grep**       | Search text content within files.                        |
+| **j** | **FindWith7z** | Search files inside archives (zip, 7z, etc.).            |
+| **k** | **GrepWith7z** | Full-text search inside archived files.                  |
+| **l** | **ScoopList**  | List installed Scoop packages and binaries.              |
+| **n** | **WindowList** | List open windows with titles, positions, and sizes.     |
+| **s** | **PingSweep**  | Perform a network ping sweep on a range.                 |
+| **i** | **GitStatus**  | Execute `git status` and capture output.                 |
 
 ## 📄 License
 
